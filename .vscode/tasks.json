@@ -13,6 +13,8 @@
                 "${workspaceFolder}/src/main.cpp",
                 "${workspaceFolder}/src/Document.cpp",
                 "${workspaceFolder}/src/DocumentLoader.cpp",
+                "${workspaceFolder}/src/Tokenizer.cpp",
+                "${workspaceFolder}/src/InvertedIndex.cpp",
                 "-o",
                 "${workspaceFolder}/build/SearchEngine.exe"
             ],

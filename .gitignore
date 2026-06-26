@@ -1,0 +1,12 @@
+# Build output
+build/
+*.exe
+*.o
+*.obj
+
+# VS Code cache
+.vscode/*.ipch
+
+# OS files
+Thumbs.db
+.DS_Store
