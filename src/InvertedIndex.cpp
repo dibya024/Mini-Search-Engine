@@ -18,7 +18,7 @@ void InvertedIndex::build(const std::vector<Document> &documents)
 
         std::unordered_set<std::string> uniqueWords(words.begin(), words.end());
 
-        for (const auto &word : words)
+        for (const auto &word : uniqueWords)
         {
             index[word].push_back(doc.getId());
         }

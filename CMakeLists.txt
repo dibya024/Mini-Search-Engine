@@ -13,4 +13,5 @@ add_executable(SearchEngine
     src/DocumentLoader.cpp
     src/Tokenizer.cpp
     src/InvertedIndex.cpp
+    src/QueryProcessor.cpp
 )
