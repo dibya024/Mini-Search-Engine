@@ -14,4 +14,5 @@ add_executable(SearchEngine
     src/Tokenizer.cpp
     src/InvertedIndex.cpp
     src/QueryProcessor.cpp
+    src/Ranker.cpp
 )
