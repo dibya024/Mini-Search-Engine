@@ -16,6 +16,7 @@ private:
     const InvertedIndex &index;
 
     std::vector<int> intersect(const std::vector<int>& first, const std::vector<int>& second) const;
+    std::vector<int> unite(const std::vector<int>& first, const std::vector<int>& second) const;
 
     void printDocuments(const std::vector<int>& ids) const;
 

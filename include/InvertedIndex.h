@@ -12,6 +12,7 @@ struct Posting
 {
     int docId;
     int freq;
+    std::vector<int> positions;
 };
 
 
@@ -26,5 +27,6 @@ class InvertedIndex
         void print() const;
 
         std::vector<Posting> searchPostings(const std::string& word) const;
+        std::vector<int> phraseSearch(const std::vector<std::string>& words) const;
 
 };

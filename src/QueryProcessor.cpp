@@ -5,14 +5,7 @@
 #include <iostream>
 #include <unordered_set>
 
-
-
-
-
 QueryProcessor::QueryProcessor(const std::vector<Document> &docs, const InvertedIndex &idx) : documents(docs), index(idx) {}
-
-
-
 
 void QueryProcessor::run() const
 {
@@ -32,11 +25,34 @@ void QueryProcessor::run() const
             break;
         }
 
+        bool isPhraseQry = query.size() >= 2 && query.front() == '"' && query.back() == '"';
+
+        if (isPhraseQry)
+        {
+            query= query.substr(1, query.size() - 2);
+        }
+
         Tokenizer tknzr;
         std::vector<std::string> words = tknzr.tokenize(query);
+        std::vector<std::string> queryTerms;
+
+        for (const std::string& word : words)
+        {
+            if (word != "or")
+            {
+                queryTerms.push_back(word);
+            }
+        }
 
         if (words.empty())
         {
+            continue;
+        }
+
+        if (isPhraseQry)
+        {
+            std::vector<int> res= index.phraseSearch(words);
+            printDocuments(res);
             continue;
         }
 
@@ -44,22 +60,32 @@ void QueryProcessor::run() const
 
         for (size_t i = 1; i < words.size(); i++)
         {
-            res = intersect(res, index.search(words[i]));
+            if (words[i] == "or")
+            {
+                if (i + 1 < words.size())
+                {
+                    std::vector<int> ids = index.search(words[i + 1]);
+                    res= unite(res, ids);
+                    i++;
+                }
+            }
+            else
+            {
+                std::vector<int> ids= index.search(words[i]);
+                res= intersect(res, ids);
+            }
         }
 
         Ranker ranker;
 
         auto rankedResults =
-            ranker.rank(words, res, index, documents.size());
+            ranker.rank(queryTerms, res, index, documents.size());
 
         printRankedDocuments(rankedResults);
     }
 
     std::cout << "\nBye!\nSee you again!\n";
 }
-
-
-
 
 std::vector<int> QueryProcessor::intersect(const std::vector<int> &first, const std::vector<int> &second) const
 {
@@ -76,8 +102,21 @@ std::vector<int> QueryProcessor::intersect(const std::vector<int> &first, const 
     return res;
 }
 
+std::vector<int> QueryProcessor::unite(const std::vector<int> &first, const std::vector<int> &second) const
+{
+    std::unordered_set<int> uniqueIds;
 
+    for (int id : first)
+    {
+        uniqueIds.insert(id);
+    }
 
+    for (int id : second)
+    {
+        uniqueIds.insert(id);
+    }
+    return std::vector<int> (uniqueIds.begin(), uniqueIds.end());
+}
 
 void QueryProcessor::printDocuments(const std::vector<int> &ids) const
 {
@@ -100,9 +139,6 @@ void QueryProcessor::printDocuments(const std::vector<int> &ids) const
         }
     }
 }
-
-
-
 
 void QueryProcessor::printRankedDocuments(
     const std::vector<SearchResult> &results) const
